@@ -103,8 +103,8 @@ include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/shell/shell.mk
 # ChibiOS-Contrib
-include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
-include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
+#include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
+#include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F410xB.ld
@@ -120,15 +120,20 @@ CSRC = $(STARTUPSRC) \
        $(BOARDSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
-       adc.c pwm.c i2c.c spi.c exti.c wdog.c flash.c env.c helpers.c \
-       analog_data.c \
-       shell/cmd_status.c shell/cmd_out.c shell/cmd_reboot.c \
-       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c shell/cmd_env.c \
-       shell/cmd_dm.c shell/cmd_blink.c shell/cmd_date.c \
+       helpers.c \
        shell/shellcommands.c \
-       threads/blinker.c threads/auxlink.c \
-       threads/messaging.c threads/threadkiller.c \
+       shell/cmd_reboot.c \
        main.c
+
+#       adc.c pwm.c i2c.c spi.c exti.c wdog.c flash.c env.c helpers.c \
+#       analog_data.c \
+#       shell/cmd_status.c shell/cmd_out.c shell/cmd_reboot.c \
+#       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c shell/cmd_env.c \
+#       shell/cmd_dm.c shell/cmd_blink.c shell/cmd_date.c \
+#       shell/shellcommands.c \
+#       threads/blinker.c threads/auxlink.c \
+#       threads/messaging.c threads/threadkiller.c \
+#       main.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -160,7 +165,6 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = ./shell ./threads \
          $(CHIBIOS)/os/license \
-         $(CHIBIOS_CONTRIB)/os/various \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(STREAMSINC) $(SHELLINC)

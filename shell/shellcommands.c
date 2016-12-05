@@ -6,6 +6,7 @@ char uartShellHistoryBuffer[SHELL_MAX_HIST_BUFF];
 
 const ShellCommand commands[] =
 {
+#if 0
     { "status",  cmd_status },
     { "out",     cmd_out },
     { "blink",   cmd_blink },
@@ -17,6 +18,7 @@ const ShellCommand commands[] =
     { "dmb",     cmd_dmb },
     { "dmw",     cmd_dmw },
     { "date",    cmd_date },
+#endif
     { "reboot",  cmd_reboot },
     {NULL, NULL}
 };

@@ -200,7 +200,7 @@
                                      PIN_MODE_ALTERNATE(GPIOA_PA2_ACCLINKTX) | \
                                      PIN_MODE_ALTERNATE(GPIOA_PA3_ACCLINKRX) | \
                                      PIN_MODE_INPUT(GPIOA_PA4_NC) | \
-                                     PIN_MODE_INPUT(GPIOA_PA5_NC) | \
+                                     PIN_MODE_OUTPUT(GPIOA_PA5_NC) | \
                                      PIN_MODE_INPUT(GPIOA_PA6_NC) | \
                                      PIN_MODE_INPUT(GPIOA_PA7_NC) | \
                                      PIN_MODE_INPUT(GPIOA_PA8_GPS1PPS) | \
@@ -268,7 +268,7 @@
                                      PIN_ODR_HIGH(GPIOA_PA2_ACCLINKTX) | \
                                      PIN_ODR_HIGH(GPIOA_PA3_ACCLINKRX) | \
                                      PIN_ODR_HIGH(GPIOA_PA4_NC) | \
-                                     PIN_ODR_HIGH(GPIOA_PA5_NC) | \
+                                     PIN_ODR_LOW(GPIOA_PA5_NC) | \
                                      PIN_ODR_HIGH(GPIOA_PA6_NC) | \
                                      PIN_ODR_HIGH(GPIOA_PA7_NC) | \
                                      PIN_ODR_HIGH(GPIOA_PA8_GPS1PPS) | \

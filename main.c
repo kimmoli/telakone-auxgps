@@ -3,11 +3,13 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "helpers.h"
 #include "chprintf.h"
 #include "shell.h"
-
-#include "helpers.h"
 #include "shellcommands.h"
+
+#if 0
+
 #include "adc.h"
 #include "pwm.h"
 #include "i2c.h"
@@ -23,22 +25,24 @@
 
 char *environment;
 char **environ;
+#endif
 
 int main(void)
 {
     halInit();
     chSysInit();
-    wdogTKInit(WDG_TIMEOUT_NORMAL);
+//    wdogTKInit(WDG_TIMEOUT_NORMAL);
 
     sdStart(&SD6, NULL);  /* Serial console in USART6, 115200 */
 
     consoleStream = (BaseSequentialStream *) &SD6;
 
+
     PRINT("\n\r");
     PRINT("\n\rtelakone GPS\n\r");
     PRINT("------------\n\r");
     PRINT("\n\r");
-
+#if 0
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
     environ = chHeapAlloc(NULL, ENV_PAGE_SIZE*sizeof(char*));
 
@@ -79,15 +83,16 @@ int main(void)
 
     /* Everything is initialised, turh red led off */
     palClearLine(LINE_REDLED);
-
+#endif
     shellInit();
 
     chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_uart);
 
     while (true)
     {
-        wdogTKKick();
-        chThdSleepMilliseconds(200);
-        palToggleLine(LINE_GREENLED);
+//        wdogTKKick();
+        chThdSleepMilliseconds(500);
+//        palToggleLine(LINE_GREENLED);
+        palToggleLine(PAL_LINE(GPIOA, 5U));
     }
 }
