@@ -8,6 +8,9 @@
 #include "shell.h"
 #include "shellcommands.h"
 
+#include "wdog.h"
+#include "env.h"
+
 #if 0
 
 #include "adc.h"
@@ -15,23 +18,23 @@
 #include "i2c.h"
 #include "spi.h"
 #include "exti.h"
-#include "wdog.h"
-#include "env.h"
+
 #include "threadkiller.h"
 
 #include "blinker.h"
 #include "auxlink.h"
 #include "messaging.h"
+#endif
 
 char *environment;
 char **environ;
-#endif
+
 
 int main(void)
 {
     halInit();
     chSysInit();
-//    wdogTKInit(WDG_TIMEOUT_NORMAL);
+    wdogTKInit(WDG_TIMEOUT_NORMAL);
 
     sdStart(&SD6, NULL);  /* Serial console in USART6, 115200 */
 
@@ -42,7 +45,8 @@ int main(void)
     PRINT("\n\rtelakone GPS\n\r");
     PRINT("------------\n\r");
     PRINT("\n\r");
-#if 0
+
+
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
     environ = chHeapAlloc(NULL, ENV_PAGE_SIZE*sizeof(char*));
 
@@ -50,7 +54,7 @@ int main(void)
     memset(environ, 0, ENV_PAGE_SIZE*sizeof(char*));
 
     PRINT(" - Loaded %d variables\n\r", envLoader());
-
+#if 0
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
     crcStart(&CRCD1, NULL);
 
@@ -90,7 +94,7 @@ int main(void)
 
     while (true)
     {
-//        wdogTKKick();
+        wdogTKKick();
         chThdSleepMilliseconds(500);
 //        palToggleLine(LINE_GREENLED);
         palToggleLine(PAL_LINE(GPIOA, 5U));

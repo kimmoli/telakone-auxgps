@@ -13,11 +13,11 @@ extern void cmd_blink(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_ping(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_diic(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_piic(BaseSequentialStream *chp, int argc, char *argv[]);
-extern void cmd_env(BaseSequentialStream *chp, int argc, char *argv[]);
-extern void cmd_dmw(BaseSequentialStream *chp, int argc, char *argv[]);
-extern void cmd_dmb(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_date(BaseSequentialStream *chp, int argc, char *argv[]);
 #endif
+extern void cmd_dmw(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_dmb(BaseSequentialStream *chp, int argc, char *argv[]);
+extern void cmd_env(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 
 extern const ShellCommand commands[];

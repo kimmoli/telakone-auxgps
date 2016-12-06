@@ -122,14 +122,15 @@ CSRC = $(STARTUPSRC) \
        $(SHELLSRC) \
        helpers.c \
        shell/shellcommands.c \
-       shell/cmd_reboot.c \
+       shell/cmd_reboot.c shell/cmd_env.c shell/cmd_dm.c \
+       wdog.c flash.c env.c \
        main.c
 
 #       adc.c pwm.c i2c.c spi.c exti.c wdog.c flash.c env.c helpers.c \
 #       analog_data.c \
 #       shell/cmd_status.c shell/cmd_out.c shell/cmd_reboot.c \
 #       shell/cmd_ping.c shell/cmd_diic.c shell/cmd_piic.c shell/cmd_env.c \
-#       shell/cmd_dm.c shell/cmd_blink.c shell/cmd_date.c \
+#       shell/cmd_blink.c shell/cmd_date.c \
 #       shell/shellcommands.c \
 #       threads/blinker.c threads/auxlink.c \
 #       threads/messaging.c threads/threadkiller.c \

@@ -3,9 +3,9 @@
 
 /* Use only one sector */
 
-#define FLASH_SECTOR 11
-#define FLASH_SECTOR_BASE 0x080E0000
-#define FLASH_SECTOR_SIZE 0x20000
+#define FLASH_SECTOR 4
+#define FLASH_SECTOR_BASE 0x08010000
+#define FLASH_SECTOR_SIZE 0x10000
 
 /* Error codes */
 
