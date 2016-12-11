@@ -31,7 +31,7 @@
  * Use watchdog
  */
 
-// #define TK_USE_WDOG
+#define TK_USE_WDOG
 
 /*
  * Board oscillators-related settings.
@@ -165,8 +165,8 @@
 #define LINE_IN4                    PAL_LINE(GPIOC, 4U)
 #define LINE_OUT1                   PAL_LINE(GPIOC, 4U)
 #define LINE_OUT2                   PAL_LINE(GPIOC, 5U)
-#define LINE_REDLED                 PAL_LINE(GPIOC, 8U)
-#define LINE_GREENLED               PAL_LINE(GPIOC, 9U)
+#define LINE_GREENLED               PAL_LINE(GPIOC, 8U)
+#define LINE_REDLED                 PAL_LINE(GPIOC, 9U)
 
 #define LINE_OSC_IN                 PAL_LINE(GPIOH, 0U)
 #define LINE_OSC_OUT                PAL_LINE(GPIOH, 1U)

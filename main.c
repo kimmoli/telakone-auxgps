@@ -10,6 +10,7 @@
 
 #include "wdog.h"
 #include "env.h"
+#include "threadkiller.h"
 
 #if 0
 
@@ -19,7 +20,6 @@
 #include "spi.h"
 #include "exti.h"
 
-#include "threadkiller.h"
 
 #include "blinker.h"
 #include "auxlink.h"
@@ -67,6 +67,7 @@ int main(void)
     auxLinkInit(0x00);
 
     wdogTKKick();
+#endif
 #ifndef TK_USE_WDOG
     PRINT(" - Watchdog is disabled\n\r");
 #endif
@@ -75,11 +76,12 @@ int main(void)
 
     /* Start threads */
     startThreadKiller();
+#if 0
     startI2cThread();
     startMessagingThread(); /* Parses messages from network */
     startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     startAuxLinkThread(); /* Auxiliary device link */
-
+#endif
     PRINT(" - Threads started\n\r");
 
     PRINT("\n\r");
@@ -87,7 +89,7 @@ int main(void)
 
     /* Everything is initialised, turh red led off */
     palClearLine(LINE_REDLED);
-#endif
+
     shellInit();
 
     chThdCreateFromHeap(NULL, SHELL_WA_SIZE, "shell", NORMALPRIO + 1, shellThread, (void *)&shell_cfg_uart);
@@ -96,7 +98,7 @@ int main(void)
     {
         wdogTKKick();
         chThdSleepMilliseconds(500);
-//        palToggleLine(LINE_GREENLED);
-        palToggleLine(PAL_LINE(GPIOA, 5U));
+        palToggleLine(LINE_GREENLED);
+//        palToggleLine(PAL_LINE(GPIOA, 5U));
     }
 }

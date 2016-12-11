@@ -124,6 +124,7 @@ CSRC = $(STARTUPSRC) \
        shell/shellcommands.c \
        shell/cmd_reboot.c shell/cmd_env.c shell/cmd_dm.c \
        wdog.c flash.c env.c \
+       threads/threadkiller.c \
        main.c
 
 #       adc.c pwm.c i2c.c spi.c exti.c wdog.c flash.c env.c helpers.c \
