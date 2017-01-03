@@ -54,8 +54,10 @@ int main(void)
     memset(environ, 0, ENV_PAGE_SIZE*sizeof(char*));
 
     PRINT(" - Loaded %d variables\n\r", envLoader());
-#if 0
+
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
+#if 0
+
     crcStart(&CRCD1, NULL);
 
     i2cTKInit();

@@ -31,7 +31,7 @@
  * Use watchdog
  */
 
-#define TK_USE_WDOG
+// #define TK_USE_WDOG
 
 /*
  * Board oscillators-related settings.

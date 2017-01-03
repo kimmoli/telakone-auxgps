@@ -13,8 +13,8 @@ const ShellCommand commands[] =
     { "ping",    cmd_ping },
     { "diic",    cmd_diic },
     { "piic",    cmd_piic },
+    #endif
     { "date",    cmd_date },
-#endif
     { "dm",      cmd_dmb },
     { "dmb",     cmd_dmb },
     { "dmw",     cmd_dmw },
