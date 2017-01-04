@@ -29,7 +29,8 @@ SOURCES += \
     helpers.c \
     analog_data.c \
     threads/auxlink.c \
-    threads/gps.c
+    threads/gps.c \
+    shell/cmd_gps.c
 
 HEADERS += \
     adc.h \

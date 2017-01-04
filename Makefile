@@ -123,7 +123,7 @@ CSRC = $(STARTUPSRC) \
        helpers.c \
        shell/shellcommands.c \
        shell/cmd_reboot.c shell/cmd_env.c shell/cmd_dm.c \
-       shell/cmd_date.c \
+       shell/cmd_date.c shell/cmd_gps.c \
        wdog.c flash.c env.c exti.c pwm.c \
        threads/threadkiller.c threads/gps.c threads/blinker.c \
        main.c

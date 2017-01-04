@@ -1,11 +1,11 @@
 #include "hal.h"
 #include "exti.h"
+#include "gps.h"
 
 static void inputExtIrqHandler(EXTDriver *extp, expchannel_t channel);
 static void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel);
 
 event_source_t inputEvent;
-event_source_t gpsPPSEvent;
 
 static const EXTConfig extcfg =
 {
@@ -45,7 +45,7 @@ void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel)
     extChannelDisable(extp, channel);
     chSysLockFromISR();
 
-    chEvtBroadcastFlags(&gpsPPSEvent, 1);
+    chEvtBroadcastFlags(&gpsEvent, 1);
 
     chSysUnlockFromISR();
     extChannelEnable(extp, channel);

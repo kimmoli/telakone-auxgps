@@ -14,6 +14,7 @@ const ShellCommand commands[] =
     { "diic",    cmd_diic },
     { "piic",    cmd_piic },
     #endif
+    { "gps",    cmd_gps },
     { "date",    cmd_date },
     { "dm",      cmd_dmb },
     { "dmb",     cmd_dmb },
