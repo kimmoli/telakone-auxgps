@@ -12,6 +12,7 @@
 #include "env.h"
 #include "pwm.h"
 #include "exti.h"
+#include "spi.h"
 
 #include "threadkiller.h"
 #include "blinker.h"
@@ -21,7 +22,6 @@
 
 #include "adc.h"
 #include "i2c.h"
-#include "spi.h"
 
 #include "auxlink.h"
 #include "messaging.h"
@@ -47,6 +47,7 @@ int main(void)
     PRINT("------------\n\r");
     PRINT("\n\r");
 
+    spiTKInit();
 
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
     environ = chHeapAlloc(NULL, ENV_PAGE_SIZE*sizeof(char*));
@@ -66,7 +67,6 @@ int main(void)
     crcStart(&CRCD1, NULL);
 
     i2cTKInit();
-    spiTKInit();
     adcTKInit();
     adcTKStartConv();
     auxLinkInit(0x00);

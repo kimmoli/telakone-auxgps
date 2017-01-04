@@ -3,7 +3,7 @@
 #include "hal.h"
 #include "env.h"
 #include "chprintf.h"
-#include "flash.h"
+#include "spiflash.h"
 #include "helpers.h"
 
 extern char **environ;

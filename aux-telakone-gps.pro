@@ -18,7 +18,6 @@ SOURCES += \
     shell/cmd_piic.c \
     exti.c \
     wdog.c \
-    flash.c \
     shell/cmd_env.c \
     shell/cmd_dm.c \
     env.c \
@@ -30,7 +29,8 @@ SOURCES += \
     analog_data.c \
     threads/auxlink.c \
     threads/gps.c \
-    shell/cmd_gps.c
+    shell/cmd_gps.c \
+    spiflash.c
 
 HEADERS += \
     adc.h \
@@ -49,13 +49,13 @@ HEADERS += \
     exti.h \
     helpers.h \
     wdog.h \
-    flash.h \
     env.h \
     threads/messaging.h \
     threads/threadkiller.h \
     analog_data.h \
     threads/auxlink.h \
-    threads/gps.h
+    threads/gps.h \
+    spiflash.h
 
 OTHER_FILES += \
     Makefile
