@@ -1,6 +1,6 @@
 #include "hal.h"
 #include "pwm.h"
-#include "hal_community.h"
+// #include "hal_community.h"
 
 const PWMConfig pwmcfgOutput =
 {

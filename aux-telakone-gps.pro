@@ -28,7 +28,8 @@ SOURCES += \
     shell/cmd_date.c \
     helpers.c \
     analog_data.c \
-    threads/auxlink.c
+    threads/auxlink.c \
+    threads/gps.c
 
 HEADERS += \
     adc.h \
@@ -52,7 +53,8 @@ HEADERS += \
     threads/messaging.h \
     threads/threadkiller.h \
     analog_data.h \
-    threads/auxlink.h
+    threads/auxlink.h \
+    threads/gps.h
 
 OTHER_FILES += \
     Makefile

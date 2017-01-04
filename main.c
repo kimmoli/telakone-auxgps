@@ -10,18 +10,19 @@
 
 #include "wdog.h"
 #include "env.h"
+#include "pwm.h"
+#include "exti.h"
+
 #include "threadkiller.h"
+#include "blinker.h"
+#include "gps.h"
 
 #if 0
 
 #include "adc.h"
-#include "pwm.h"
 #include "i2c.h"
 #include "spi.h"
-#include "exti.h"
 
-
-#include "blinker.h"
 #include "auxlink.h"
 #include "messaging.h"
 #endif
@@ -56,6 +57,10 @@ int main(void)
     PRINT(" - Loaded %d variables\n\r", envLoader());
 
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
+
+    pwmTKInit();
+    extiTKInit();
+
 #if 0
 
     crcStart(&CRCD1, NULL);
@@ -64,8 +69,6 @@ int main(void)
     spiTKInit();
     adcTKInit();
     adcTKStartConv();
-    pwmTKInit();
-    extiTKInit();
     auxLinkInit(0x00);
 
     wdogTKKick();
@@ -78,10 +81,13 @@ int main(void)
 
     /* Start threads */
     startThreadKiller();
+    startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
+    startGpsThread();     /* GPS Receiver and 1PPS handler thread */
+
 #if 0
     startI2cThread();
     startMessagingThread(); /* Parses messages from network */
-    startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
+
     startAuxLinkThread(); /* Auxiliary device link */
 #endif
     PRINT(" - Threads started\n\r");

@@ -2,28 +2,30 @@
 #include "exti.h"
 
 static void inputExtIrqHandler(EXTDriver *extp, expchannel_t channel);
+static void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel);
 
 event_source_t inputEvent;
+event_source_t gpsPPSEvent;
 
 static const EXTConfig extcfg =
 {
   {
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL},
-    {EXT_CH_MODE_DISABLED, NULL}
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px0
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px1
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px2
+    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px3
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px4
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px5
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px6
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px7
+    {EXT_CH_MODE_RISING_EDGE | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOA, gpsPPSIrqHandler},   // Px8
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px9
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px10
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px11
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px12
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px13
+    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px14
+    {EXT_CH_MODE_DISABLED, NULL}                                                            // Px15
   }
 };
 
@@ -33,6 +35,17 @@ void inputExtIrqHandler(EXTDriver *extp, expchannel_t channel)
     chSysLockFromISR();
 
     chEvtBroadcastFlags(&inputEvent, channel);
+
+    chSysUnlockFromISR();
+    extChannelEnable(extp, channel);
+}
+
+void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel)
+{
+    extChannelDisable(extp, channel);
+    chSysLockFromISR();
+
+    chEvtBroadcastFlags(&gpsPPSEvent, 1);
 
     chSysUnlockFromISR();
     extChannelEnable(extp, channel);
