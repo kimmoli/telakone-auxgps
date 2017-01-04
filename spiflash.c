@@ -16,7 +16,7 @@ static void flashWaitBusy(void)
 
     while (rxBuf[1] & 0x01)
     {
-        chThdSleepMilliseconds(100);
+        chThdSleepMilliseconds(1);
         spiSelect(&SPID2);
         spiExchange(&SPID2, 2, txBuf, rxBuf);
         spiUnselect(&SPID2);
@@ -105,8 +105,8 @@ int flashWrite(flashaddr_t address, const char* buffer, size_t size)
         if ( (addr+16) > (address+size) )
             count = (address+size) - addr;
 
-        for (i = offset; i < offset + count ; i++)
-            txBuf[i+4] = *(buffer+i);
+        for (i = 0; i < count ; i++)
+            txBuf[i+4] = *(buffer+offset+i);
 
         flashWriteEnable();
 
