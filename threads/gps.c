@@ -248,14 +248,14 @@ static void ParseRMC ( const char data[], struct gps_output_params_t *gps_output
     if ( *ptr == 'A' )
     {
         // Data is valid
-        ptr = ptr + 2;
+        get_next_field( 2, &ptr, NULL );
         gps_output->latitude = get_coordinate ( &ptr, 2u );
         if ( *ptr == 'S' )
         {
             // Change to negative for south latitude
             gps_output->latitude = -gps_output->latitude;
         }
-        ptr = ptr + 2;
+        get_next_field( 2, &ptr, NULL );
         gps_output->longitude = get_coordinate ( &ptr, 3u );
         if ( *ptr == 'W' )
         {
@@ -267,7 +267,7 @@ static void ParseRMC ( const char data[], struct gps_output_params_t *gps_output
     }
     else
     {
-        // Just take date (eigth field from current position)
+        // Just take date (eighth field from current position)
         get_next_field( 8, &ptr, UTC_date );
     }
 
@@ -306,11 +306,11 @@ static void ParseGSA ( const char data[], struct gsa_data_t *gsa_data )
             get_next_field( 2, &ptr, NULL );
             i++;
         }
-        gsa_data->pdop = ( float )strtod( ptr, NULL );
+        gsa_data->pdop = strtof( ptr, NULL );
         get_next_field( 2, &ptr, NULL );
-        gsa_data->hdop = ( float )strtod( ptr, NULL );
+        gsa_data->hdop = strtof( ptr, NULL );
         get_next_field( 2, &ptr, NULL );
-        gsa_data->vdop = ( float )strtod( ptr, NULL );
+        gsa_data->vdop = strtof( ptr, NULL );
     }
 }
 
@@ -362,28 +362,39 @@ static void get_epoch_sec_ms ( const char *UTC_time, const char *UTC_date, uint3
 
 static float get_coordinate( const char **src, size_t degree_field_len )
 {
-    // Latitude in format ‘ddmm.mmmmm’ (degrees and minutes) : degree_field_len = 2
-    // Longitude in format ‘dddmm.mmmmm’ (degrees and minutes) : degree_field_len = 3
+    // Latitude in format ‘ddmm.mmmm’ (degrees and minutes) : degree_field_len = 2
+    // Longitude in format ‘dddmm.mmmm’ (degrees and minutes) : degree_field_len = 3
 
     float retval;
     float temp;
-    char degrees[4];
-    char minutes[9];
+    char degrees[10];
+    char minutes[15];
     const char *lp = *src;
+    const char *ptr;
+    uint32_t i;
 
     memset ( degrees, 0, sizeof(degrees) );
     memset ( minutes, 0, sizeof(minutes) );
 
+    // Copy degrees part according to given field length
     strncpy( degrees, lp, degree_field_len );
-    strncpy( minutes, &lp[degree_field_len], 8u );
+    // Minutes part: copy until ',' encountered (amount of decimals may vary).
+    ptr = &lp[degree_field_len];
+    i = 0u;
+    while ( *ptr != ',' )
+    {
+        minutes[i] = *ptr;
+        ptr++;
+        i++;
+    }
 
-    temp = ( float )strtof( minutes, NULL );
+    temp = strtof( minutes, NULL );
     temp = ( float ) ( temp / 60.0 );
-    retval = ( float )strtof( degrees, NULL );
+    retval = strtof( degrees, NULL );
     retval = retval + temp;
 
     // Advance to next field
-    *src = *src + (9u + degree_field_len);
+    *src = *src + (degree_field_len + i + 1u);
 
     return ( retval );
 }
