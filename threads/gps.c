@@ -121,6 +121,8 @@ static THD_FUNCTION(gpsPPSThread, arg)
                     RTCDateTime timespec;
                     rtcConvertStructTmToDateTime(timp, 0, &timespec);
                     rtcSetTime(&RTCD1, &timespec);
+
+                    gpsSetRTC = false;
                 }
 
                 if (gpsDebug)
