@@ -1,18 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "messaging.h"
+#include "auxlink.h"
 #include "hal.h"
 #include "chprintf.h"
-#include "blinker.h"
-#include "pwm.h"
 #include "helpers.h"
+#include "pwm.h"
 
 #define MESSAGEBUFFERSIZE 10
 
 static mailbox_t messagingMBox;
 static msg_t messagingBuff[MESSAGEBUFFERSIZE];
 static messagingMessage_t messages[MESSAGEBUFFERSIZE];
-static GUARDEDMEMORYPOOL_DECL(messagingMBoxPool, sizeof(messages));
+static GUARDEDMEMORYPOOL_DECL(messagingMBoxPool, sizeof(messages), PORT_NATURAL_ALIGN);
 
 static THD_WORKING_AREA(messagingThreadWA, 4096);
 
@@ -21,6 +21,10 @@ static THD_FUNCTION(messagingThread, arg)
     (void)arg;
     tk_message_t replyMessage;
 
+    replyMessage.header = TK_MESSAGE_HEADER;
+    replyMessage.fromNode = myAuxlinkAddress;
+    replyMessage.destination = DEST_ACK;
+
     msg_t res;
     msg_t mmst;
 
@@ -28,39 +32,37 @@ static THD_FUNCTION(messagingThread, arg)
 
     while (true)
     {
-        res = chMBFetch(&messagingMBox, &mmst, TIME_INFINITE);
+        res = chMBFetchTimeout(&messagingMBox, &mmst, TIME_INFINITE);
         if (res == MSG_OK)
         {
             messagingMessage_t *mmp = (messagingMessage_t *)mmst;
 
             if (mmp->messagingEvent & MESSAGING_EVENT_SEND)
             {
-                if (mmp->message.header == TK_MESSAGE_HEADER && mmp->message.toNode == 0x00)
+                if (mmp->message.header == TK_MESSAGE_HEADER && mmp->message.toNode == myAuxlinkAddress)
                 {
-                    PRINT("[MSG] Received message from %x to %x event data %08x\n\r",
-                          mmp->message.fromNode, mmp->message.destination, mmp->message.event);
-
                     switch (mmp->message.destination)
                     {
-                        case DEST_PING:
-                            replyMessage.header = TK_MESSAGE_HEADER;
-                            replyMessage.toNode = mmp->message.fromNode;
-                            replyMessage.fromNode = 0x00;
-                            replyMessage.destination = DEST_PING;
-                            replyMessage.event = mmp->message.event;
-
-                            if (mmp->source.channel == MESSAGING_UDP)
-                            {
-//                                udpSend(mmp->source.ipAddress, NULL, mmp->source.port, (char *) &replyMessage, sizeof(tk_message_t));
-                            }
+                        case DEST_ACK:
+                            PRINT("OK\n\r");
                             break;
 
-                        case DEST_BLINKER:
-                            chEvtBroadcastFlags(&blinkEvent, mmp->message.event);
+                        case DEST_PING:
+                            PRINT("Got ping from %02x, replying...\n\r", mmp->message.fromNode);
+
+                            replyMessage.toNode = mmp->message.fromNode;
+                            replyMessage.sequence = mmp->message.sequence;
+                            replyMessage.event = 0;
+                            auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &replyMessage);
                             break;
 
                         case DEST_PWM:
                             pwmSetChannel((mmp->message.event & 0xff00) >> 8, 100, mmp->message.event & 0xff);
+
+                            replyMessage.toNode = mmp->message.fromNode;
+                            replyMessage.sequence = mmp->message.sequence;
+                            replyMessage.event = 0;
+                            auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &replyMessage);
                             break;
 
                         default:
@@ -92,7 +94,7 @@ msg_t sendMessage(messagingMessage_t *newMsg)
     if ((void *) m != NULL)
     {
         memcpy((void *) m, newMsg, sizeof(messagingMessage_t));
-        res = chMBPost(&messagingMBox, (msg_t) m, TIME_IMMEDIATE);
+        res = chMBPostTimeout(&messagingMBox, (msg_t) m, TIME_IMMEDIATE);
     }
     else
     {

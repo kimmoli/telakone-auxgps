@@ -16,6 +16,7 @@
 #include "threadkiller.h"
 #include "gps.h"
 #include "auxlink.h"
+#include "messaging.h"
 
 #if 0
 
@@ -23,7 +24,6 @@
 #include "i2c.h"
 #include "wdog.h"
 
-#include "messaging.h"
 #endif
 
 char *environment;
@@ -45,9 +45,12 @@ int main(void)
     PRINT("\n\rtelakone GPS\n\r");
     PRINT("------------\n\r");
     PRINT("\n\r");
+    PRINT(" - AUX Link address 0x20\n\r");
 
     pwmTKInit();
     spiTKInit();
+    extiTKInit();
+    auxLinkInit(0x20);
 
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
     environ = chHeapAlloc(NULL, ENV_PAGE_SIZE*sizeof(char*));
@@ -58,9 +61,6 @@ int main(void)
     PRINT(" - Loaded %d variables\n\r", envLoader());
 
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
-
-    extiTKInit();
-    auxLinkInit(0x20);
 
 #if 0
 
@@ -82,10 +82,10 @@ int main(void)
     startThreadKiller();
     startGpsThread();     /* GPS Receiver and 1PPS handler thread */
     startAuxLinkThread(); /* Auxiliary device link */
+    startMessagingThread(); /* Parses messages from network */
 
 #if 0
     startI2cThread();
-    startMessagingThread(); /* Parses messages from network */
 
 #endif
     PRINT(" - Threads started\n\r");

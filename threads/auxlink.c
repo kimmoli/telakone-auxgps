@@ -1,8 +1,10 @@
+#include <string.h>
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
 #include "auxlink.h"
 #include "helpers.h"
+#include "messaging.h"
 
 uint8_t myAuxlinkAddress;
 
@@ -25,7 +27,7 @@ static THD_FUNCTION(auxLinkThread, arg)
         msg_t charbuf;
         do
         {
-            charbuf = chnGetTimeout(&SD2, MS2ST(100));
+            charbuf = chnGetTimeout(&SD2, MS2ST(10));
 
             if (charbuf != Q_TIMEOUT)
             {
@@ -42,12 +44,17 @@ static THD_FUNCTION(auxLinkThread, arg)
 
         if (count > 0)
         {
-            DEBUG("Received %d bytes\n\r", count);
-            dump((char *)rxBuf, count);
             count = 0;
+            messagingMessage_t m = {0};
+            m.messagingEvent = MESSAGING_EVENT_SEND;
+            m.source.channel = MESSAGING_AUXLINK;
+            memcpy(&m.message, rxBuf, sizeof(tk_message_t));
+
+            if (sendMessage(&m) != MSG_OK)
+                DEBUG("error\n\r");
         }
 
-        chThdSleepMilliseconds(50);
+        //chThdSleepMilliseconds(50);
     }
 
     chThdExit(MSG_OK);
@@ -68,9 +75,6 @@ void auxLinkInit(uint8_t address)
 void auxLinkTransmit(int count, uint8_t * buf)
 {
     int i;
-
-    PRINT("Sending %d bytes\n\r", count);
-    dump((const char *)buf, count);
 
     palSetLine(LINE_ACCLINKTXE);
     chThdSleepMicroseconds(10);

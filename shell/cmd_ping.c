@@ -19,6 +19,7 @@ void cmd_ping(BaseSequentialStream *chp, int argc, char *argv[])
     message.header = TK_MESSAGE_HEADER;
     message.fromNode = myAuxlinkAddress;
     message.toNode = strtol(argv[0], NULL, 0);
+    message.sequence = 0;
     message.destination = DEST_PING;
     message.event = 0x12345678;
 

@@ -20,6 +20,7 @@ const ShellCommand commands[] =
     { "gps",     cmd_gps },
     { "date",    cmd_date },
     { "ping",    cmd_ping },
+    { "send",    cmd_send },
     {NULL, NULL}
 };
 

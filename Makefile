@@ -134,9 +134,11 @@ CSRC = $(STARTUPSRC) \
        shell/cmd_gps.c \
        shell/cmd_out.c \
        shell/cmd_ping.c \
+       shell/cmd_send.c \
        threads/threadkiller.c \
        threads/gps.c \
        threads/auxlink.c \
+       threads/messaging.c \
        main.c
 
 #       adc.c pwm.c i2c.c spi.c wdog.c flash.c env.c helpers.c \
