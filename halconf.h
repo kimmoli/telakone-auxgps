@@ -62,7 +62,7 @@
  * @brief   Enables the EXT subsystem.
  */
 #if !defined(HAL_USE_EXT) || defined(__DOXYGEN__)
-#define HAL_USE_EXT                 TRUE
+#define HAL_USE_EXT                 FALSE
 #endif
 
 /**
@@ -382,6 +382,8 @@
 #if !defined(USB_USE_WAIT) || defined(__DOXYGEN__)
 #define USB_USE_WAIT                FALSE
 #endif
+
+#include "halconf_community.h"
 
 #endif /* HALCONF_H */
 

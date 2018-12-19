@@ -86,8 +86,8 @@ endif
 PROJECT = aux-telakone-gps
 
 # Imported source files and paths
-CHIBIOS = ../ChibiOS
-CHIBIOS_CONTRIB = ../ChibiOS-Contrib
+CHIBIOS = ./ChibiOS
+CHIBIOS_CONTRIB = ./ChibiOS-Contrib
 
 # Startup files.
 include $(CHIBIOS)/os/common/startup/ARMCMx/compilers/GCC/mk/startup_stm32f4xx.mk
@@ -103,8 +103,8 @@ include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 include $(CHIBIOS)/os/hal/lib/streams/streams.mk
 include $(CHIBIOS)/os/various/shell/shell.mk
 # ChibiOS-Contrib
-#include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
-#include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
+include ${CHIBIOS_CONTRIB}/os/hal/hal.mk
+include ${CHIBIOS_CONTRIB}/os/hal/ports/STM32/STM32F4xx/platform.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F410xB.ld
@@ -121,11 +121,22 @@ CSRC = $(STARTUPSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        helpers.c \
+       spiflash.c \
+       env.c \
+       exti.c \
+       spi.c \
+       pwm.c \
        shell/shellcommands.c \
-       shell/cmd_reboot.c shell/cmd_env.c shell/cmd_dm.c \
-       shell/cmd_date.c shell/cmd_gps.c \
-       wdog.c spiflash.c env.c exti.c pwm.c spi.c \
-       threads/threadkiller.c threads/gps.c threads/blinker.c \
+       shell/cmd_reboot.c \
+       shell/cmd_dm.c \
+       shell/cmd_env.c \
+       shell/cmd_date.c \
+       shell/cmd_gps.c \
+       shell/cmd_out.c \
+       shell/cmd_ping.c \
+       threads/threadkiller.c \
+       threads/gps.c \
+       threads/auxlink.c \
        main.c
 
 #       adc.c pwm.c i2c.c spi.c wdog.c flash.c env.c helpers.c \
@@ -168,6 +179,7 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = ./shell ./threads \
          $(CHIBIOS)/os/license \
+         $(CHIBIOS_CONTRIB)/os/various \
          $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) \
          $(STREAMSINC) $(SHELLINC)

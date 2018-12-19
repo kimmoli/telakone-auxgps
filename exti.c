@@ -2,63 +2,70 @@
 #include "exti.h"
 #include "gps.h"
 
-static void inputExtIrqHandler(EXTDriver *extp, expchannel_t channel);
-static void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel);
-
 event_source_t inputEvent;
+static virtual_timer_t inputDebounce_vt[4];
+static void inputDebounce_cb(void *arg);
+InputValues_t *inputvalues[4];
 
-static const EXTConfig extcfg =
-{
-  {
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px0
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px1
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px2
-    {EXT_CH_MODE_BOTH_EDGES | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOC, inputExtIrqHandler},  // Px3
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px4
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px5
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px6
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px7
-    {EXT_CH_MODE_RISING_EDGE | EXT_CH_MODE_AUTOSTART | EXT_MODE_GPIOA, gpsPPSIrqHandler},   // Px8
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px9
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px10
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px11
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px12
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px13
-    {EXT_CH_MODE_DISABLED, NULL},                                                           // Px14
-    {EXT_CH_MODE_DISABLED, NULL}                                                            // Px15
-  }
-};
+static ioline_t inputIOs[4] = { LINE_IN1, LINE_IN2, LINE_IN3, LINE_IN4 };
 
-void inputExtIrqHandler(EXTDriver *extp, expchannel_t channel)
+static void inputHandler(void *arg)
 {
-    extChannelDisable(extp, channel);
     chSysLockFromISR();
 
-    chEvtBroadcastFlags(&inputEvent, channel);
+    if (!chVTIsArmedI(&inputDebounce_vt[(int)arg]))
+    {
+        chVTSetI(&inputDebounce_vt[(int)arg], MS2ST(100), inputDebounce_cb, arg);
+    }
 
     chSysUnlockFromISR();
-    extChannelEnable(extp, channel);
 }
 
-void gpsPPSIrqHandler(EXTDriver *extp, expchannel_t channel)
+void inputDebounce_cb(void *arg)
 {
-    extChannelDisable(extp, channel);
+    int ch = (int)arg;
+
     chSysLockFromISR();
 
-    chEvtBroadcastFlags(&gpsEvent, 1);
+    if (palReadLine(inputIOs[ch]) == PAL_LOW && inputvalues[ch]->inputState == TRUE)
+    {
+        inputvalues[ch]->inputCount++;
+        inputvalues[ch]->inputState = FALSE;
+        chEvtBroadcastFlags(&inputEvent, ch);
+    }
+    if (palReadLine(inputIOs[ch]) == PAL_HIGH && inputvalues[ch]->inputState == FALSE)
+    {
+        inputvalues[ch]->inputState = TRUE;
+        chEvtBroadcastFlags(&inputEvent, ch);
+    }
 
     chSysUnlockFromISR();
-    extChannelEnable(extp, channel);
+}
+
+static void gpsppsHandler(void *arg)
+{
+    (void) arg;
+
+    chSysLockFromISR();
+    chEvtBroadcastFlags(&gpsEvent, 1);
+    chSysUnlockFromISR();
 }
 
 void extiTKInit(void)
 {
     chEvtObjectInit(&inputEvent);
 
-    extStart(&EXTD1, &extcfg);
+    for (int i=0;i<4;i++)
+    {
+        inputvalues[i] = chHeapAlloc(NULL, sizeof(InputValues_t));
+        inputvalues[i]->inputState = FALSE;
+        inputvalues[i]->inputCount = 0;
+        chVTObjectInit(&inputDebounce_vt[i]);
+        palEnableLineEvent(inputIOs[i], PAL_EVENT_MODE_BOTH_EDGES);
+        palSetLineCallback(inputIOs[i], inputHandler, (void *)i);
+    }
 
-    extChannelEnable(&EXTD1, GPIOC_PC0_IN1);
-    extChannelEnable(&EXTD1, GPIOC_PC1_IN2);
-    extChannelEnable(&EXTD1, GPIOC_PC2_IN3);
-    extChannelEnable(&EXTD1, GPIOC_PC3_IN4);
+    palEnableLineEvent(LINE_GPS1PPS, PAL_EVENT_MODE_RISING_EDGE);
+    palSetLineCallback(LINE_GPS1PPS, gpsppsHandler, NULL);
 }
+

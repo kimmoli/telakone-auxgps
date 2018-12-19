@@ -186,7 +186,6 @@ static THD_FUNCTION(gpsReceiveThread, arg)
 void startGpsThread(void)
 {
     chEvtObjectInit(&gpsEvent);
-    extChannelEnable(&EXTD1, GPIOA_PA8_GPS1PPS);
     sdStart(&SD1, &gpsReceiveConfig);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "gps pps", NORMALPRIO+1, gpsPPSThread, NULL);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "gps nmea", NORMALPRIO+1, gpsReceiveThread, NULL);

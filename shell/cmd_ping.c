@@ -24,6 +24,6 @@ void cmd_ping(BaseSequentialStream *chp, int argc, char *argv[])
 
     chprintf(chp, "pinging %02x\n\r", message.toNode);
 
-    auxLinkTransmit(sizeof(message), (uint8_t *) &message);
+    auxLinkTransmit(sizeof(tk_message_t), (uint8_t *) &message);
 }
 

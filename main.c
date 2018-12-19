@@ -8,22 +8,21 @@
 #include "shell.h"
 #include "shellcommands.h"
 
-#include "wdog.h"
 #include "env.h"
-#include "pwm.h"
 #include "exti.h"
 #include "spi.h"
+#include "pwm.h"
 
 #include "threadkiller.h"
-#include "blinker.h"
 #include "gps.h"
+#include "auxlink.h"
 
 #if 0
 
 #include "adc.h"
 #include "i2c.h"
+#include "wdog.h"
 
-#include "auxlink.h"
 #include "messaging.h"
 #endif
 
@@ -35,7 +34,7 @@ int main(void)
 {
     halInit();
     chSysInit();
-    wdogTKInit(WDG_TIMEOUT_NORMAL);
+//    wdogTKInit(WDG_TIMEOUT_NORMAL);
 
     sdStart(&SD6, NULL);  /* Serial console in USART6, 115200 */
 
@@ -47,6 +46,7 @@ int main(void)
     PRINT("------------\n\r");
     PRINT("\n\r");
 
+    pwmTKInit();
     spiTKInit();
 
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
@@ -59,8 +59,8 @@ int main(void)
 
     rtcSTM32SetPeriodicWakeup(&RTCD1, NULL);
 
-    pwmTKInit();
     extiTKInit();
+    auxLinkInit(0x20);
 
 #if 0
 
@@ -69,7 +69,6 @@ int main(void)
     i2cTKInit();
     adcTKInit();
     adcTKStartConv();
-    auxLinkInit(0x00);
 
     wdogTKKick();
 #endif
@@ -81,14 +80,13 @@ int main(void)
 
     /* Start threads */
     startThreadKiller();
-    startBlinkerThread(); /* Controls the external warning lamps on OUT1 */
     startGpsThread();     /* GPS Receiver and 1PPS handler thread */
+    startAuxLinkThread(); /* Auxiliary device link */
 
 #if 0
     startI2cThread();
     startMessagingThread(); /* Parses messages from network */
 
-    startAuxLinkThread(); /* Auxiliary device link */
 #endif
     PRINT(" - Threads started\n\r");
 
@@ -104,7 +102,7 @@ int main(void)
 
     while (true)
     {
-        wdogTKKick();
+//        wdogTKKick();
         chThdSleepMilliseconds(500);
         palToggleLine(LINE_GREENLED);
 //        palToggleLine(PAL_LINE(GPIOA, 5U));
