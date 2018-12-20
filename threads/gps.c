@@ -6,6 +6,8 @@
 #include "gps.h"
 #include "exti.h"
 #include "helpers.h"
+#include "auxlink.h"
+#include "messaging.h"
 
 #define NMEA_ID_RMC         1
 #define NMEA_ID_VTG         2
@@ -60,17 +62,17 @@ static SerialConfig gpsReceiveConfig =
 
 static struct gsa_data_t  gsa_gps;
 
-static void ParseGPSData( const char data[], struct gps_output_params_t *gps_output );
-static void ParseRMC ( const char data[], struct gps_output_params_t *gps_output );
+static void ParseGPSData( const char data[], gps_output_params_t *gps_output );
+static void ParseRMC ( const char data[], gps_output_params_t *gps_output );
 static void ParseGSA ( const char data[], struct gsa_data_t *gsa_data );
-static void ParseVTG ( const char data[], struct gps_output_params_t *gps_output );
+static void ParseVTG ( const char data[], gps_output_params_t *gps_output );
 
 static uint8_t get_pos_mode ( char m );
 static void    get_epoch_sec_ms (const char *UTC_time, const char *UTC_date, uint32_t *sec, uint32_t *ms );
 static float   get_coordinate( const char **src, size_t degree_field_len );
 static void    get_next_field( int32_t index, const char **src, char *dest );
 
-struct gps_output_params_t gps_output;
+gps_output_params_t gps_output;
 event_source_t gpsEvent;
 
 static THD_FUNCTION(gpsPPSThread, arg)
@@ -81,6 +83,10 @@ static THD_FUNCTION(gpsPPSThread, arg)
     uint32_t prev_secs = 0;
     bool gpsDebug = false;
     bool gpsSetRTC = false;
+    tk_gpsmessage_t gpsReply;
+
+    gpsReply.header = TK_MESSAGE_HEADER;
+    gpsReply.fromNode = myAuxlinkAddress;
 
     chEvtRegister(&gpsEvent, &elGps, 0);
 
@@ -138,6 +144,15 @@ static THD_FUNCTION(gpsPPSThread, arg)
                 prev_secs = gps_output.UTC_sec;
             }
         }
+
+        if (flags & GPSEVENT_GET)
+        {
+            gpsReply.toNode = (flags & 0xff0000) >> 16;
+            gpsReply.sequence = 0;
+            gpsReply.destination = REPLY | DEST_GPS;
+            memcpy(&gpsReply.data, &gps_output, sizeof(gps_output_params_t));
+            auxLinkTransmit(sizeof(tk_gpsmessage_t), (uint8_t *) &gpsReply);
+        }
     }
 
     chThdExit(MSG_OK);
@@ -193,7 +208,7 @@ void startGpsThread(void)
 
 /* GPS Parsing functions */
 
-static void ParseGPSData( const char data[], struct gps_output_params_t *gps_output )
+static void ParseGPSData( const char data[], gps_output_params_t *gps_output )
 {
     int32_t  msg_tag = 0;
     uint32_t i;
@@ -232,7 +247,7 @@ static void ParseGPSData( const char data[], struct gps_output_params_t *gps_out
     }
 }
 
-static void ParseRMC ( const char data[], struct gps_output_params_t *gps_output )
+static void ParseRMC ( const char data[], gps_output_params_t *gps_output )
 {
     char UTC_time[15];
     char UTC_date[10];
@@ -313,7 +328,7 @@ static void ParseGSA ( const char data[], struct gsa_data_t *gsa_data )
     }
 }
 
-static void ParseVTG ( const char data[], struct gps_output_params_t *gps_output )
+static void ParseVTG ( const char data[], gps_output_params_t *gps_output )
 {
     const char *ptr = data;
 

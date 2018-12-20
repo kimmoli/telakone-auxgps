@@ -31,12 +31,12 @@ void inputDebounce_cb(void *arg)
     {
         inputvalues[ch]->inputCount++;
         inputvalues[ch]->inputState = FALSE;
-        chEvtBroadcastFlags(&inputEvent, ch);
+        chEvtBroadcastFlagsI(&inputEvent, ch);
     }
     if (palReadLine(inputIOs[ch]) == PAL_HIGH && inputvalues[ch]->inputState == FALSE)
     {
         inputvalues[ch]->inputState = TRUE;
-        chEvtBroadcastFlags(&inputEvent, ch);
+        chEvtBroadcastFlagsI(&inputEvent, ch);
     }
 
     chSysUnlockFromISR();
@@ -47,7 +47,7 @@ static void gpsppsHandler(void *arg)
     (void) arg;
 
     chSysLockFromISR();
-    chEvtBroadcastFlags(&gpsEvent, 1);
+    chEvtBroadcastFlagsI(&gpsEvent, 1);
     chSysUnlockFromISR();
 }
 

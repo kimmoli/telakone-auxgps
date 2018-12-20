@@ -83,7 +83,7 @@ endif
 #
 
 # Define project name here
-PROJECT = aux-telakone-gps
+PROJECT = telakone-auxgps
 
 # Imported source files and paths
 CHIBIOS = ./ChibiOS

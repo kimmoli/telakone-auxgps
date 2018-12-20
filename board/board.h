@@ -24,8 +24,8 @@
 /*
  * Board identifier.
  */
-#define BOARD_KIMMOLI_TELAKONE
-#define BOARD_NAME                  "Kimmoli's telakone GPS STM32F410RB"
+#define BOARD_AUXGPS
+#define BOARD_NAME                  "Telakone AUX GPS STM32F410RB"
 
 /*
  * Use watchdog
