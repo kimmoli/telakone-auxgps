@@ -118,9 +118,7 @@ static THD_FUNCTION(gpsPPSThread, arg)
 
                 utc_sec = gps_output.UTC_sec;
                 timp = localtime(&utc_sec);
-
-                if (getenv("tz") != NULL)
-                    timp->tm_hour += strtol(getenv("tz"), NULL, 10);
+                timp->tm_hour += gps_output.tz;
 
                 if (gpsSetRTC)
                 {
@@ -204,6 +202,12 @@ void startGpsThread(void)
     sdStart(&SD1, &gpsReceiveConfig);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "gps pps", NORMALPRIO+1, gpsPPSThread, NULL);
     chThdCreateFromHeap(NULL, THD_WORKING_AREA_SIZE(1024), "gps nmea", NORMALPRIO+1, gpsReceiveThread, NULL);
+
+    if (getenv("tz") != NULL)
+        gps_output.tz = strtol(getenv("tz"), NULL, 10);
+    else
+        gps_output.tz = 0;
+
 }
 
 /* GPS Parsing functions */
