@@ -124,11 +124,13 @@ CSRC = $(STARTUPSRC) \
        $(STREAMSSRC) \
        $(SHELLSRC) \
        $(COMMONSRC) \
+       $(MESSAGINGSRC) \
        spiflash.c \
        env.c \
        exti.c \
        spi.c \
        pwm.c \
+       i2c.c \
        shell/shellcommands.c \
        shell/cmd_env.c \
        shell/cmd_date.c \
