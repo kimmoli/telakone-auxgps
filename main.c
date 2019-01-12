@@ -12,6 +12,7 @@
 #include "exti.h"
 #include "spi.h"
 #include "pwm.h"
+#include "i2c.h"
 
 #include "threadkiller.h"
 #include "gps.h"
@@ -21,7 +22,6 @@
 #if 0
 
 #include "adc.h"
-#include "i2c.h"
 #include "wdog.h"
 
 #endif
@@ -50,6 +50,7 @@ int main(void)
     pwmTKInit();
     spiTKInit();
     extiTKInit();
+    i2cTKInit();
     auxLinkInit(0x20);
 
     environment = chHeapAlloc(NULL, ENV_PAGE_SIZE);
@@ -66,7 +67,6 @@ int main(void)
 
     crcStart(&CRCD1, NULL);
 
-    i2cTKInit();
     adcTKInit();
     adcTKStartConv();
 

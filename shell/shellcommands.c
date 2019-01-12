@@ -8,9 +8,10 @@ const ShellCommand commands[] =
 {
 #if 0
     { "status",  cmd_status },
+#endif
     { "diic",    cmd_diic },
     { "piic",    cmd_piic },
-    #endif
+    { "probe",    cmd_probe },
     { "reboot",  cmd_reboot },
     { "dm",      cmd_dmb },
     { "dmb",     cmd_dmb },

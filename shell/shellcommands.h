@@ -8,9 +8,10 @@
 
 #if 0
 extern void cmd_status(BaseSequentialStream *chp, int argc, char *argv[]);
+#endif
 extern void cmd_diic(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_piic(BaseSequentialStream *chp, int argc, char *argv[]);
-#endif
+extern void cmd_probe(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_reboot(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_dmw(BaseSequentialStream *chp, int argc, char *argv[]);
 extern void cmd_dmb(BaseSequentialStream *chp, int argc, char *argv[]);
