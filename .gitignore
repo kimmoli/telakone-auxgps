@@ -1,3 +1,11 @@
 .dep/
 build/
-aux-telakone-gps.pro.user*
+*.pro
+*.pro.*
+.project
+.cproject
+.metadata/
+.settings/
+
+
+
